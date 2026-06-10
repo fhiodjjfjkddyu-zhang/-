@@ -2,55 +2,33 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>给你的一个小页面</title>
+<title>你可以点，也可以不点</title>
 
 <style>
 body {
   margin: 0;
   height: 100vh;
-  overflow: hidden;
-  font-family: sans-serif;
-  background: radial-gradient(circle at center, #1a1a2e, #0f3460, #000);
+  background: radial-gradient(circle, #0f2027, #203a43, #000);
   color: white;
-}
-
-/* 星空粒子 */
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-}
-
-/* 中间卡片 */
-.container {
-  position: relative;
-  z-index: 1;
-  max-width: 420px;
-  margin: auto;
-  top: 50%;
-  transform: translateY(-50%);
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  background: rgba(255,255,255,0.05);
+  overflow: hidden;
+}
+
+.container {
+  max-width: 500px;
   padding: 30px;
+  background: rgba(255,255,255,0.05);
   border-radius: 12px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(8px);
+  transition: all 0.6s ease;
 }
 
-/* 动画 */
-.hidden {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.show {
-  opacity: 1;
-  transform: translateY(0);
-  transition: all 1s ease;
-}
-
-/* 按钮 */
 button {
-  margin-top: 20px;
+  margin: 10px;
   padding: 10px 20px;
   border: none;
   background: rgba(255,255,255,0.1);
@@ -65,105 +43,116 @@ button:hover {
 </style>
 
 <script>
-function show(id) {
-  let el = document.getElementById(id);
-  el.classList.remove("hidden");
-  el.classList.add("show");
+function setScene(text, options) {
+  const c = document.getElementById("box");
+  c.innerHTML = "<p>" + text + "</p>";
+
+  options.forEach(op => {
+    const btn = document.createElement("button");
+    btn.innerText = op.label;
+    btn.onclick = op.action;
+    c.appendChild(btn);
+  });
 }
 
-function ending() {
-  document.body.innerHTML = `
-  <div style="
-    display:flex;
-    height:100vh;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    font-size:20px;
-    line-height:1.8;
-    padding:40px;
-  ">
-  有些事情<br><br>
-  其实不用现在就想明白<br><br>
-  就像现在这个页面<br><br>
-  也只是陪你走到这里而已
-  </div>
-  `;
+/* 场景们 */
+
+function start() {
+  setScene(
+    "你可以继续看\n也可以现在关掉\n\n这两件事都没有更好",
+    [
+      {label: "继续", action: s1},
+      {label: "我只是点一下", action: s2}
+    ]
+  );
 }
 
-/* 粒子星空 */
-window.onload = function() {
-  let canvas = document.getElementById("stars");
-  let ctx = canvas.getContext("2d");
-
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  let stars = [];
-  for (let i = 0; i < 100; i++) {
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 2
-    });
-  }
-
-  function draw() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = "white";
-
-    stars.forEach(s => {
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-      ctx.fill();
-
-      s.y += 0.2;
-      if (s.y > canvas.height) s.y = 0;
-    });
-
-    requestAnimationFrame(draw);
-  }
-
-  draw();
+function s1() {
+  setScene(
+    "那你刚刚的“继续”\n是因为好奇\n还是因为不想停下来？",
+    [
+      {label: "再往前", action: s3},
+      {label: "停一下", action: idle}
+    ]
+  );
 }
+
+function s2() {
+  setScene(
+    "“只是点一下”\n通常不是只是\n\n但也没关系",
+    [
+      {label: "那再点一次", action: s3},
+      {label: "算了", action: idle}
+    ]
+  );
+}
+
+function s3() {
+  setScene(
+    "如果现在没有这个页面\n你刚刚那一刻\n会在想什么？",
+    [
+      {label: "不知道", action: s4},
+      {label: "不想想", action: s5}
+    ]
+  );
+}
+
+function s4() {
+  setScene(
+    "“不知道”\n有时候比答案更接近真实",
+    [
+      {label: "继续", action: s6},
+      {label: "停在这里", action: idle}
+    ]
+  );
+}
+
+function s5() {
+  setScene(
+    "不想想\n其实已经是一种回答",
+    [
+      {label: "那就这样", action: idle},
+      {label: "还是往前", action: s6}
+    ]
+  );
+}
+
+function s6() {
+  setScene(
+    "你有没有发现\n你一直在点\n但没有一个地方要求你必须继续",
+    [
+      {label: "那我现在停", action: idle},
+      {label: "最后一下", action: end}
+    ]
+  );
+}
+
+function idle() {
+  setScene(
+    "那就停一下\n\n不用关\n也不用继续\n\n就放在这里",
+    [
+      {label: "……", action: start}
+    ]
+  );
+}
+
+function end() {
+  setScene(
+    "其实没有结论\n\n只是有人在这段时间\n陪你分担了一点点注意力",
+    [
+      {label: "重新开始", action: start}
+    ]
+  );
+}
+
+window.onload = start;
 </script>
 
 </head>
 
 <body>
 
-<canvas id="stars"></canvas>
-
-<div class="container">
-
-<h2 class="show">先别急着关掉</h2>
-<p class="show">这个页面确实不会很长</p>
-
-<button onclick="show('s1')">那我就看一下</button>
-
-<div id="s1" class="hidden">
-  <p>刚才那一阵<br>大概有点重吧</p>
-  <button onclick="show('s2')">嗯…继续</button>
-</div>
-
-<div id="s2" class="hidden">
-  <p>其实也不一定要说出来</p>
-  <p>有些东西<br>说出来反而变形</p>
-  <button onclick="show('s3')">那就这样走一会</button>
-</div>
-
-<div id="s3" class="hidden">
-  <p>你可以什么都不解决</p>
-  <p>也可以什么都不决定</p>
-  <button onclick="show('s4')">再往前一点</button>
-</div>
-
-<div id="s4" class="hidden">
-  <p>有时候人不是在“变好”</p>
-  <p>只是慢慢不那么用力撑着了</p>
-  <button onclick="ending()">最后一步</button>
-</div>
-
+<div class="container" id="box">
 </div>
 
 </body>
