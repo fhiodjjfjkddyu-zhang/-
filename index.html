@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>你可以点，也可以不点</title>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: radial-gradient(circle, #0f2027, #203a43, #000);
+  color: white;
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 500px;
+  padding: 30px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  transition: all 0.6s ease;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: rgba(255,255,255,0.25);
+}
+</style>
+
+<script>
+function setScene(text, options) {
+  const c = document.getElementById("box");
+  c.innerHTML = "<p>" + text + "</p>";
+
+  options.forEach(op => {
+    const btn = document.createElement("button");
+    btn.innerText = op.label;
+    btn.onclick = op.action;
+    c.appendChild(btn);
+  });
+}
+
+/* 场景们 */
+
+function start() {
+  setScene(
+    "你可以继续看\n也可以现在关掉\n\n这两件事都没有更好",
+    [
+      {label: "继续", action: s1},
+      {label: "我只是点一下", action: s2}
+    ]
+  );
+}
+
+function s1() {
+  setScene(
+    "那你刚刚的“继续”\n是因为好奇\n还是因为不想停下来？",
+    [
+      {label: "再往前", action: s3},
+      {label: "停一下", action: idle}
+    ]
+  );
+}
+
+function s2() {
+  setScene(
+    "“只是点一下”\n通常不是只是\n\n但也没关系",
+    [
+      {label: "那再点一次", action: s3},
+      {label: "算了", action: idle}
+    ]
+  );
+}
+
+function s3() {
+  setScene(
+    "如果现在没有这个页面\n你刚刚那一刻\n会在想什么？",
+    [
+      {label: "不知道", action: s4},
+      {label: "不想想", action: s5}
+    ]
+  );
+}
+
+function s4() {
+  setScene(
+    "“不知道”\n有时候比答案更接近真实",
+    [
+      {label: "继续", action: s6},
+      {label: "停在这里", action: idle}
+    ]
+  );
+}
+
+function s5() {
+  setScene(
+    "不想想\n其实已经是一种回答",
+    [
+      {label: "那就这样", action: idle},
+      {label: "还是往前", action: s6}
+    ]
+  );
+}
+
+function s6() {
+  setScene(
+    "你有没有发现\n你一直在点\n但没有一个地方要求你必须继续",
+    [
+      {label: "那我现在停", action: idle},
+      {label: "最后一下", action: end}
+    ]
+  );
+}
+
+function idle() {
+  setScene(
+    "那就停一下\n\n不用关\n也不用继续\n\n就放在这里",
+    [
+      {label: "……", action: start}
+    ]
+  );
+}
+
+function end() {
+  setScene(
+    "其实没有结论\n\n只是有人在这段时间\n陪你分担了一点点注意力",
+    [
+      {label: "重新开始", action: start}
+    ]
+  );
+}
+
+window.onload = start;
+</script>
+
+</head>
+
+<body>
+
+<div class="container" id="box">
+</div>
+
+</body>
+</html>
