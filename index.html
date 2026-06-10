@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>你刚刚停了一下</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: white;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+/* 光 */
+#light {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+  transform: translate(-50%, -50%);
+}
+
+/* 容器 */
+#box {
+  position: absolute;
+  top: 30%;
+  width: 100%;
+  text-align: center;
+  z-index: 2;
+}
+
+p {
+  opacity: 0;
+  margin: 10px 0;
+  transition: 2s;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
+
+/* 星 */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+</style>
+
+<script>
+let stayTime = 0;
+setInterval(()=>stayTime++,1000);
+
+function show(text, options) {
+  const box = document.getElementById("box");
+  box.innerHTML = "";
+
+  text.forEach((line,i)=>{
+    let p = document.createElement("p");
+    p.innerText = line;
+    box.appendChild(p);
+
+    setTimeout(()=>{
+      p.style.opacity = 1;
+    }, i*1200);
+  });
+
+  options.forEach(op=>{
+    let b = document.createElement("button");
+    b.innerText = op.label;
+    b.onclick = op.action;
+    box.appendChild(b);
+  });
+}
+
+/* 开始 */
+
+function start(){
+  show([
+    "你刚刚点进来的时候",
+    "停了一下",
+    "",
+    "对吗？"
+  ],[
+    {label:"……", action:s1},
+    {label:"没有", action:s2}
+  ]);
+}
+
+/* 分支 */
+
+function s1(){
+  show([
+    "你比你以为的",
+    "更在意一些事情"
+  ],[
+    {label:"继续", action:s3}
+  ]);
+}
+
+function s2(){
+  show([
+    "那你现在停一下",
+    "",
+    "看看会发生什么"
+  ],[
+    {label:"好", action:s3}
+  ]);
+}
+
+function s3(){
+  if(stayTime > 15){
+    hidden();
+    return;
+  }
+
+  show([
+    "有些东西",
+    "不是用来解决的",
+    "",
+    "只是被看见"
+  ],[
+    {label:"被看见…", action:s4},
+    {label:"离开", action:end}
+  ]);
+}
+
+/* 隐藏剧情 */
+
+function hidden(){
+  show([
+    "你刚刚没有急着点",
+    "",
+    "所以我换了一种说法"
+  ],[
+    {label:"什么？", action:hidden2}
+  ]);
+}
+
+function hidden2(){
+  show([
+    "其实这里没有别人",
+    "",
+    "但你刚才",
+    "确实不是一个人"
+  ],[
+    {label:"……", action:end}
+  ]);
+}
+
+function s4(){
+  show([
+    "那就先这样",
+    "",
+    "不用变好"
+  ],[
+    {label:"停在这里", action:end}
+  ]);
+}
+
+function end(){
+  show([
+    "你可以关掉这个页面",
+    "",
+    "或者再待一会"
+  ],[
+    {label:"再来一次", action:start}
+  ]);
+}
+
+/* 星空 */
+
+window.onload = ()=>{
+  start();
+
+  const canvas = document.createElement("canvas");
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let stars = [];
+  for(let i=0;i<120;i++){
+    stars.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height,
+      r:Math.random()*2
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle="white";
+    stars.forEach(s=>{
+      ctx.globalAlpha = Math.random();
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+};
+
+/* 光跟随 */
+
+document.addEventListener("mousemove", e=>{
+  const light = document.getElementById("light");
+  light.style.left = e.clientX + "px";
+  light.style.top = e.clientY + "px";
+});
+</script>
+
+</head>
+
+<body>
+<div id="light"></div>
+<div id="box"></div>
+</body>
+</html>
