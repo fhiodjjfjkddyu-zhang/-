@@ -1,235 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<title>你刚刚停了一下</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>给慧靖的一个安静角落</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #121619; /* 深沉宁静的背景色 */
+            color: #EAEAEA;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+            text-align: center;
+        }
 
-<style>
-body {
-  margin: 0;
-  background: black;
-  color: white;
-  overflow: hidden;
-  font-family: sans-serif;
-}
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            color: #C0C8D0;
+        }
 
-/* 光 */
-#light {
-  position: fixed;
-  width: 300px;
-  height: 300px;
-  pointer-events: none;
-  background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
-  transform: translate(-50%, -50%);
-}
+        /* 呼吸光球动画 */
+        .breathe-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(136, 171, 194, 0.8) 0%, rgba(136, 171, 194, 0) 70%);
+            box-shadow: 0 0 40px rgba(136, 171, 194, 0.4);
+            animation: breathe 8s ease-in-out infinite;
+            margin-bottom: 50px;
+        }
 
-/* 容器 */
-#box {
-  position: absolute;
-  top: 30%;
-  width: 100%;
-  text-align: center;
-  z-index: 2;
-}
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.6); opacity: 1; }
+        }
 
-p {
-  opacity: 0;
-  margin: 10px 0;
-  transition: 2s;
-}
+        .instruction {
+            font-size: 0.9rem;
+            color: #7A8B99;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
 
-button {
-  margin: 10px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.1);
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
-}
+        .message-box {
+            min-height: 60px;
+            max-width: 80%;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #D3DDE6;
+            margin-bottom: 30px;
+            transition: opacity 0.5s ease;
+        }
 
-button:hover {
-  transform: scale(1.1);
-}
+        button {
+            background-color: transparent;
+            border: 1px solid #7A8B99;
+            color: #C0C8D0;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
 
-/* 星 */
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-}
-</style>
-
-<script>
-let stayTime = 0;
-setInterval(()=>stayTime++,1000);
-
-function show(text, options) {
-  const box = document.getElementById("box");
-  box.innerHTML = "";
-
-  text.forEach((line,i)=>{
-    let p = document.createElement("p");
-    p.innerText = line;
-    box.appendChild(p);
-
-    setTimeout(()=>{
-      p.style.opacity = 1;
-    }, i*1200);
-  });
-
-  options.forEach(op=>{
-    let b = document.createElement("button");
-    b.innerText = op.label;
-    b.onclick = op.action;
-    box.appendChild(b);
-  });
-}
-
-/* 开始 */
-
-function start(){
-  show([
-    "你刚刚点进来的时候",
-    "停了一下",
-    "",
-    "对吗？"
-  ],[
-    {label:"……", action:s1},
-    {label:"没有", action:s2}
-  ]);
-}
-
-/* 分支 */
-
-function s1(){
-  show([
-    "你比你以为的",
-    "更在意一些事情"
-  ],[
-    {label:"继续", action:s3}
-  ]);
-}
-
-function s2(){
-  show([
-    "那你现在停一下",
-    "",
-    "看看会发生什么"
-  ],[
-    {label:"好", action:s3}
-  ]);
-}
-
-function s3(){
-  if(stayTime > 15){
-    hidden();
-    return;
-  }
-
-  show([
-    "有些东西",
-    "不是用来解决的",
-    "",
-    "只是被看见"
-  ],[
-    {label:"被看见…", action:s4},
-    {label:"离开", action:end}
-  ]);
-}
-
-/* 隐藏剧情 */
-
-function hidden(){
-  show([
-    "你刚刚没有急着点",
-    "",
-    "所以我换了一种说法"
-  ],[
-    {label:"什么？", action:hidden2}
-  ]);
-}
-
-function hidden2(){
-  show([
-    "其实这里没有别人",
-    "",
-    "但你刚才",
-    "确实不是一个人"
-  ],[
-    {label:"……", action:end}
-  ]);
-}
-
-function s4(){
-  show([
-    "那就先这样",
-    "",
-    "不用变好"
-  ],[
-    {label:"停在这里", action:end}
-  ]);
-}
-
-function end(){
-  show([
-    "你可以关掉这个页面",
-    "",
-    "或者再待一会"
-  ],[
-    {label:"再来一次", action:start}
-  ]);
-}
-
-/* 星空 */
-
-window.onload = ()=>{
-  start();
-
-  const canvas = document.createElement("canvas");
-  document.body.appendChild(canvas);
-  const ctx = canvas.getContext("2d");
-
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  let stars = [];
-  for(let i=0;i<120;i++){
-    stars.push({
-      x:Math.random()*canvas.width,
-      y:Math.random()*canvas.height,
-      r:Math.random()*2
-    });
-  }
-
-  function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle="white";
-    stars.forEach(s=>{
-      ctx.globalAlpha = Math.random();
-      ctx.beginPath();
-      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
-};
-
-/* 光跟随 */
-
-document.addEventListener("mousemove", e=>{
-  const light = document.getElementById("light");
-  light.style.left = e.clientX + "px";
-  light.style.top = e.clientY + "px";
-});
-</script>
-
+        button:hover {
+            background-color: #7A8B99;
+            color: #121619;
+        }
+    </style>
 </head>
-
 <body>
-<div id="light"></div>
-<div id="box"></div>
+
+    <h1>慧靖，欢迎来到你的专属休息站</h1>
+    
+    <div class="instruction">跟着光球的节奏，深呼吸</div>
+
+    <div class="breathe-circle"></div>
+
+    <div class="message-box" id="message">
+        今天辛苦啦，先放下烦心事，允许自己在这里安静一会儿吧。
+    </div>
+
+    <button onclick="changeMessage()">点击抽取一张朋友的字条</button>
+
+    <script>
+        // 这里是你作为朋友，想对她说的话（可以自行修改或增加）
+        const messages = [
+            "不用逼着自己一直坚强，偶尔觉得累是完全正常的。",
+            "无论遇到什么麻烦，别忘了你身边还有朋友在支持你。",
+            "去泡杯热茶，听一首舒缓的古典乐，今晚什么都别想了。",
+            "有时候问题暂时解不开也没关系，时间会给出答案的。",
+            "你已经做得很好了，现在你需要的是好好休息一下。",
+            "如果觉得世界太吵，就在这里多待一会儿。",
+            "明天的事情明天再说，今天先照顾好自己的情绪。"
+        ];
+
+        function changeMessage() {
+            const msgElement = document.getElementById('message');
+            // 淡出
+            msgElement.style.opacity = 0;
+            
+            setTimeout(() => {
+                // 随机选择一条与当前不同的消息
+                let randomIndex;
+                let newMessage;
+                do {
+                    randomIndex = Math.floor(Math.random() * messages.length);
+                    newMessage = messages[randomIndex];
+                } while (newMessage === msgElement.innerText);
+                
+                msgElement.innerText = newMessage;
+                // 淡入
+                msgElement.style.opacity = 1;
+            }, 500); // 等待淡出动画完成
+        }
+    </script>
+
 </body>
 </html>
