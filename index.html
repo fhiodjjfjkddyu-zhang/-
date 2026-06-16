@@ -5,152 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>端午·光影展</title>
     <style>
-        /* 全局基础设置 */
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #050505;
-            font-family: 'Songti SC', 'SimSun', serif; 
-            overflow: hidden;
-            color: #fff;
-            user-select: none;
-        }
-
-        /* 星空画布层 */
-        #starfield {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        /* 交互界面层 */
-        #ui-layer {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        /* 屏幕切换逻辑 */
-        .screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-            position: absolute;
-        }
-        .screen.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        /* 电影节界面 UI */
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #050505; font-family: 'Songti SC', 'SimSun', serif; overflow: hidden; color: #fff; user-select: none; }
+        #starfield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        #ui-layer { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .screen { display: none; flex-direction: column; align-items: center; opacity: 0; transition: opacity 1s ease-in-out; position: absolute; }
+        .screen.active { display: flex; opacity: 1; }
         h1 { font-size: 3em; letter-spacing: 5px; margin-bottom: 40px; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
         h2 { font-size: 2.2em; color: #d4af37; letter-spacing: 3px; }
-        p.desc { font-size: 1.2em; line-height: 2; max-width: 600px; color: #ccc; margin-bottom: 40px; }
-
-        .btn {
-            margin: 15px;
-            padding: 15px 40px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            font-size: 1.2em;
-            font-family: inherit;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: all 0.3s;
-            backdrop-filter: blur(5px);
-            letter-spacing: 2px;
-        }
-        .btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-            transform: scale(1.05);
-        }
-
-        /* 罗盘与天干地支 UI */
-        #compass-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            border: 2px dashed rgba(212, 175, 55, 0.5);
-            cursor: pointer;
-            transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1);
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.1);
-        }
-        #compass-container:hover {
-            border-color: rgba(212, 175, 55, 0.9);
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.3);
-        }
-        #calendar-text {
-            font-size: 2.5em;
-            color: #d4af37;
-            font-weight: bold;
-            text-shadow: 0 0 10px #d4af37;
-        }
+        .btn { margin: 15px; padding: 15px 40px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; font-size: 1.2em; cursor: pointer; border-radius: 5px; transition: all 0.3s; backdrop-filter: blur(5px); }
+        .btn:hover { background: rgba(255, 255, 255, 0.2); box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); transform: scale(1.05); }
+        
+        #compass-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; border-radius: 50%; border: 2px dashed rgba(212, 175, 55, 0.5); cursor: pointer; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); box-shadow: 0 0 50px rgba(212, 175, 55, 0.1); }
+        #calendar-text { font-size: 2.5em; color: #d4af37; font-weight: bold; text-shadow: 0 0 10px #d4af37; }
         .compass-hint { margin-top: 30px; font-size: 1.2em; color: #888; animation: pulse 2s infinite; }
 
-        /* 金光闪烁转场 */
-        #flash-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff;
-            z-index: 999;
-            opacity: 0;
-            pointer-events: none;
-            display: none;
-        }
-
-        /* 最终贺卡 UI */
-        #final-reveal {
-            font-size: 5em;
-            font-weight: bold;
-            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 20%, #a18cd1 50%, #fbc2eb 80%, #8fd3f4 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-size: 200% auto;
-            animation: gradientMove 3s linear infinite, scaleUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            opacity: 0;
-            transform: scale(0.5);
-            margin-bottom: 20px;
-        }
-
-        #birthday-msg {
-            font-size: 2em;
-            color: #d4af37;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideUpFade 1.5s ease forwards 1s; 
-            letter-spacing: 4px;
-        }
-
-        #sub-msg {
-            font-size: 1.2em;
-            color: #aaa;
-            opacity: 0;
-            margin-top: 30px;
-            animation: slideUpFade 1.5s ease forwards 2.5s; 
-        }
-
-        /* 动画定义 */
+        #flash-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 999; opacity: 0; pointer-events: none; display: none; }
+        #final-reveal { font-size: 5em; font-weight: bold; background: linear-gradient(45deg, #ff9a9e, #a18cd1, #8fd3f4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: scaleUp 1s ease forwards; opacity: 0; }
+        #birthday-msg { font-size: 2em; color: #d4af37; opacity: 0; animation: slideUpFade 1.5s ease forwards 1s; }
+        
         @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-        @keyframes gradientMove { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
         @keyframes scaleUp { to { opacity: 1; transform: scale(1); } }
         @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
         @keyframes flashGold { 0% { display: block; opacity: 1; background: #d4af37; } 100% { opacity: 0; display: none; } }
@@ -159,21 +32,18 @@
 <body>
 
     <canvas id="starfield"></canvas>
-
     <div id="flash-overlay"></div>
 
     <div id="ui-layer">
-        
         <div id="screen1" class="screen active">
             <h1>端午·光影展</h1>
-            <button class="btn" onclick="selectMovie('《屈原》', '长太息以掩涕兮，哀民生之多艰。走进战国，体会楚辞的浪漫与家国情怀。')">选项 1: 《屈原》</button>
-            <button class="btn" onclick="selectMovie('《典籍里的中国》', '惟殷先人，有册有典。在浩瀚卷帙中，寻找华夏文明的文脉源头。')">选项 2: 《典籍里的中国》</button>
-            <button class="btn" onclick="selectMovie('《相遇中国》', '跨越山海，和而不同。见证不同文化交融碰撞的绚烂火花。')">选项 3: 《相遇中国》</button>
+            <button class="btn" onclick="selectMovie('《屈原》')">选项 1: 《屈原》</button>
+            <button class="btn" onclick="selectMovie('《典籍里的中国》')">选项 2: 《典籍里的中国》</button>
+            <button class="btn" onclick="selectMovie('《相遇中国》')">选项 3: 《相遇中国》</button>
         </div>
 
         <div id="screen2" class="screen">
             <h2 id="movie-title"></h2>
-            <p id="movie-desc" class="desc"></p>
             <button class="btn" onclick="goToCompass()">继续探索</button>
         </div>
 
@@ -187,131 +57,57 @@
         <div id="screen4" class="screen">
             <div id="final-reveal">天降俊哲</div>
             <div id="birthday-msg">包氏云旭，年十九满腹经纶</div>
-            <div id="sub-msg">愿你岁岁常欢愉，万事皆胜意。生日快乐！🎂<br><br>（这才是今天真正的重头戏）</div>
         </div>
-
     </div>
 
     <audio id="bgm" src="b.mp3" preload="auto"></audio>
 
     <script>
-        // --- 星空背景逻辑 ---
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
-        let width, height, stars = [];
-        let warpSpeed = 1; 
-
+        let warpSpeed = 1;
+        let stars = [];
         function initStars() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            stars = [];
-            for (let i = 0; i < 800; i++) {
-                stars.push({
-                    x: Math.random() * width - width / 2,
-                    y: Math.random() * height - height / 2,
-                    z: Math.random() * width
-                });
-            }
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            for (let i = 0; i < 800; i++) stars.push({x: Math.random()*innerWidth-innerWidth/2, y: Math.random()*innerHeight-innerHeight/2, z: Math.random()*innerWidth});
         }
-
         function drawStars() {
-            ctx.fillStyle = 'rgba(5, 5, 5, 0.3)'; 
-            ctx.fillRect(0, 0, width, height);
-            ctx.translate(width / 2, height / 2);
-
-            for (let star of stars) {
-                star.z -= warpSpeed;
-                if (star.z <= 0) {
-                    star.x = Math.random() * width - width / 2;
-                    star.y = Math.random() * height - height / 2;
-                    star.z = width;
-                }
-
-                let sx = star.x / (star.z / width);
-                let sy = star.y / (star.z / width);
-                let radius = (1 - star.z / width) * 3;
-
-                ctx.beginPath();
-                ctx.arc(sx, sy, radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${1 - star.z/width})`;
-                ctx.fill();
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.3)'; ctx.fillRect(0,0,innerWidth,innerHeight);
+            ctx.translate(innerWidth/2, innerHeight/2);
+            for(let s of stars) {
+                s.z -= warpSpeed;
+                if(s.z <= 0) s.z = innerWidth;
+                let sx = s.x / (s.z/innerWidth), sy = s.y / (s.z/innerWidth);
+                ctx.beginPath(); ctx.arc(sx, sy, (1-s.z/innerWidth)*3, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(255,255,255,${1-s.z/innerWidth})`; ctx.fill();
             }
-            ctx.translate(-width / 2, -height / 2);
+            ctx.translate(-innerWidth/2, -innerHeight/2);
             requestAnimationFrame(drawStars);
         }
+        initStars(); drawStars();
 
-        window.addEventListener('resize', initStars);
-        initStars();
-        drawStars();
-
-        // --- 界面切换逻辑 ---
-        function switchScreen(hideId, showId) {
-            const hideEl = document.getElementById(hideId);
-            const showEl = document.getElementById(showId);
-            hideEl.classList.remove('active');
-            setTimeout(() => {
-                showEl.classList.add('active');
-            }, 500); 
-        }
-
-        function selectMovie(title, desc) {
-            document.getElementById('movie-title').innerText = title;
-            document.getElementById('movie-desc').innerText = desc;
-            switchScreen('screen1', 'screen2');
-        }
-
-        function goToCompass() {
-            switchScreen('screen2', 'screen3');
-        }
-
-        // --- 罗盘与惊喜逻辑 ---
-        const stemsAndBranches = ["甲子", "乙丑", "丙寅", "丁卯", "戊辰", "己巳", "庚午", "辛未", "壬申", "癸酉", "甲戌", "乙亥"];
-        let isSpinning = false;
+        function selectMovie(title) { document.getElementById('movie-title').innerText = title; switchScreen('screen1', 'screen2'); }
+        function goToCompass() { switchScreen('screen2', 'screen3'); }
+        function switchScreen(h, s) { document.getElementById(h).classList.remove('active'); setTimeout(() => document.getElementById(s).classList.add('active'), 500); }
 
         function spinCompass() {
-            if (isSpinning) return;
-            isSpinning = true;
-            
             const compass = document.getElementById('compass-container');
-            const textEl = document.getElementById('calendar-text');
-            document.querySelector('.compass-hint').innerText = "星象流转，时空穿梭...";
-            
-            // 罗盘视觉旋转
-            compass.style.transform = "rotate(1080deg) scale(1.2)";
-            warpSpeed = 15; 
-
+            compass.style.transform = "rotate(2160deg) scale(1.2)";
+            warpSpeed = 15;
             let counter = 0;
-            // 快速循环天干地支
-            let interval = setInterval(() => {
-                textEl.innerText = stemsAndBranches[counter % stemsAndBranches.length];
-                counter++;
-            }, 80);
-
-            // 3秒后停止在特定日期
+            const stems = ["甲子", "乙丑", "丙寅", "丁卯", "戊辰", "己巳", "庚午", "辛未", "壬申", "癸酉", "甲戌", "乙亥"];
+            let int = setInterval(() => document.getElementById('calendar-text').innerText = stems[counter++ % 12], 80);
             setTimeout(() => {
-                clearInterval(interval);
-                textEl.innerText = "丙戌年甲午月丙子日";
-                textEl.style.fontSize = "1.8em";
-                
-                // 停顿0.5秒后引爆最终惊喜
-                setTimeout(triggerSurprise, 800);
-            }, 3000);
+                clearInterval(int);
+                document.getElementById('calendar-text').innerText = "丙戌年甲午月丙子日";
+                setTimeout(triggerSurprise, 1000);
+            }, 4000);
         }
 
         function triggerSurprise() {
-            // 1. 金光闪烁屏幕
-            const flash = document.getElementById('flash-overlay');
-            flash.style.display = 'block';
-            flash.style.animation = 'flashGold 2s ease-out forwards';
-
-            // 2. 音乐响起
-            const audio = document.getElementById('bgm');
-            audio.play().catch(e => console.log("自动播放被浏览器拦截"));
-
-            // 3. 星空恢复极慢速
-            warpSpeed = 0.5; 
-
-            // 4. 切换到最终贺卡界面
+            document.getElementById('flash-overlay').style.animation = 'flashGold 2s ease-out forwards';
+            document.getElementById('bgm').play();
+            warpSpeed = 0.5;
             switchScreen('screen3', 'screen4');
         }
     </script>
