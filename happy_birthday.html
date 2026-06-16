@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>送给包云旭的神秘礼物 🎁</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #fce4ec;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            user-select: none;
+        }
+
+        #prank-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #title {
+            font-size: 2.5em;
+            color: #d81b60;
+            margin-top: 20vh;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        #subtitle {
+            font-size: 1.2em;
+            color: #ec407a;
+            margin-top: 10px;
+        }
+
+        #gift-btn {
+            position: absolute;
+            padding: 15px 40px;
+            font-size: 1.8em;
+            background-color: #ec407a;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(236, 64, 122, 0.4);
+            left: 50%;
+            top: 60%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        #gift-btn:focus {
+            outline: none;
+        }
+
+        #birthday-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 20;
+        }
+
+        #birthday-container h1 {
+            color: #c2185b;
+            font-size: 4em;
+            margin-bottom: 10px;
+            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        #birthday-container p {
+          <h1>🎂 生日快乐，包云旭！ 🎂</h1>
+    <img src="https://photos.google.com/memory/featured/AF1QipPvSFTFcxF_JNGZXUPknISqjsy9uH7A1hZr94YF" alt="生日惊喜" id="birthday-img">
+    <p>哈哈，刚才逗你玩的！<br>祝你新的一岁天天开心！🎉</p>
+</div>
+            font-size: 1.8em;
+            color: #880e4f;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+
+        /* 撒花动画效果 */
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            top: -20px;
+            animation: fall linear infinite;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(720deg); }
+        }
+    </style>
+  #birthday-img {
+    width: 300px;
+    border-radius: 20px; /* 让图片边角变圆润 */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2); /* 加一个阴影 */
+    margin: 20px 0;
+    transition: transform 0.5s;
+}
+
+/* 鼠标悬停在图片上时，稍微放大一点点 */
+#birthday-img:hover {
+    transform: scale(1.05);
+}
+</head>
+<body>
+
+    <div id="prank-container">
+        <div id="title">🎉 包云旭，你的生日礼物到了！</div>
+        <div id="subtitle">点击下方按钮立即拆开👇</div>
+        <button id="gift-btn">🎁 领取礼物</button>
+    </div>
+
+    <div id="birthday-container">
+        <h1>🎂 生日快乐，包云旭！ 🎂</h1>
+        <p>哈哈，刚才逗你玩的！<br>祝你新的一岁天天开心，暴富暴美，万事如意！永远充满活力与快乐！🎉</p>
+    </div>
+
+    <script>
+        const btn = document.getElementById('gift-btn');
+        const prankContainer = document.getElementById('prank-container');
+        const bdayContainer = document.getElementById('birthday-container');
+        const title = document.getElementById('title');
+        const subtitle = document.getElementById('subtitle');
+        
+        let dodgeCount = 0;
+        const maxDodges = 7; // 按钮逃跑的次数
+
+        // 按钮躲避逻辑
+        btn.addEventListener('mouseover', function() {
+            if (dodgeCount < maxDodges) {
+                // 获取窗口可用宽高（减去按钮自身大小防止跑出屏幕外）
+                const windowWidth = window.innerWidth - btn.offsetWidth - 20;
+                const windowHeight = window.innerHeight - btn.offsetHeight - 20;
+
+                const randomX = Math.max(10, Math.floor(Math.random() * windowWidth));
+                const randomY = Math.max(10, Math.floor(Math.random() * windowHeight));
+
+                btn.style.left = randomX + 'px';
+                btn.style.top = randomY + 'px';
+                btn.style.transform = 'none';
+
+                dodgeCount++;
+                
+                // 趣味文案变化
+                if (dodgeCount === 2) {
+                    title.innerText = "哎呀，没点到？😜";
+                } else if (dodgeCount === 4) {
+                    title.innerText = "来抓我呀！抓到才给礼物~ 🏃‍♀️";
+                } else if (dodgeCount === 6) {
+                    title.innerText = "包云旭加油！就差一点点了！😂";
+                }
+            } else {
+                // 躲避次数达标，允许点击
+                btn.innerText = "好吧，算你赢啦！点我拆礼物 💖";
+                title.innerText = "恭喜你通关！";
+                subtitle.innerText = "";
+            }
+        });
+
+        // 手机端触摸支持
+        btn.addEventListener('touchstart', function(e) {
+            if (dodgeCount < maxDodges) {
+                e.preventDefault(); // 阻止点击
+                const windowWidth = window.innerWidth - btn.offsetWidth;
+                const windowHeight = window.innerHeight - btn.offsetHeight;
+                btn.style.left = Math.floor(Math.random() * windowWidth) + 'px';
+                btn.style.top = Math.floor(Math.random() * windowHeight) + 'px';
+                btn.style.transform = 'none';
+                dodgeCount++;
+            }
+        });
+
+        // 成功点击后显示祝福
+        btn.addEventListener('click', function() {
+            if (dodgeCount >= maxDodges) {
+                prankContainer.style.display = 'none';
+                bdayContainer.style.display = 'flex';
+                createConfetti();
+            } else {
+                // 防作弊（极速点击）
+                dodgeCount = maxDodges;
+                btn.innerText = "手速太快了吧！点我拆礼物 💖";
+            }
+        });
+
+        // 生成撒花特效
+        function createConfetti() {
+            const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#ffeb3b', '#ff9800'];
+            for (let i = 0; i < 120; i++) {
+                let confetti
