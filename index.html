@@ -3,123 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>光影岁月·赠云旭</title>
+    <title>端午·光影展映馆</title>
     <style>
+        /* 全局基础设置 */
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #050505; font-family: 'Songti SC', 'SimSun', serif; overflow: hidden; color: #fff; user-select: none; }
-        #starfield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        #ui-layer { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .screen { display: none; flex-direction: column; align-items: center; opacity: 0; transition: opacity 1s ease-in-out; position: absolute; }
-        .screen.active { display: flex; opacity: 1; }
         
-        /* 按钮与通用样式 */
-        .btn { margin: 15px; padding: 15px 40px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; cursor: pointer; border-radius: 5px; backdrop-filter: blur(5px); }
-        .btn:hover { background: rgba(255, 255, 255, 0.2); }
+        /* 星空背景层 */
+        #starfield { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        
+        /* 交互界面层 */
+        #ui-layer { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        
+        /* 屏幕切换逻辑 */
+        .screen { display: none; flex-direction: column; align-items: center; opacity: 0; transition: opacity 1.5s ease-in-out; position: absolute; width: 100%; }
+        .screen.active { display: flex; opacity: 1; }
 
-        /* 金色渐变文字效果 */
-        .gold-gradient-text {
-            font-size: 4em; font-weight: bold;
-            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine 3s infinite linear;
-        }
-        @keyframes shine { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        /* UI 元素样式 */
+        h1 { font-size: 3em; letter-spacing: 5px; margin-bottom: 40px; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+        h2 { font-size: 2.2em; color: #d4af37; letter-spacing: 3px; margin-bottom: 20px; }
+        p { font-size: 1.2em; line-height: 2; max-width: 600px; color: #ccc; margin-bottom: 30px; }
+
+        .btn { margin: 15px; padding: 15px 40px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; font-size: 1.2em; font-family: inherit; cursor: pointer; border-radius: 5px; transition: all 0.3s; backdrop-filter: blur(5px); letter-spacing: 2px; }
+        .btn:hover { background: rgba(255, 255, 255, 0.2); box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); transform: scale(1.05); }
 
         /* 罗盘样式 */
-        #compass-container { width: 250px; height: 250px; border: 2px dashed #d4af37; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); }
+        #compass-container { position: relative; width: 280px; height: 280px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; border-radius: 50%; border: 2px dashed rgba(212, 175, 55, 0.5); cursor: pointer; transition: transform 5s cubic-bezier(0.1, 0.7, 0.1, 1); box-shadow: 0 0 50px rgba(212, 175, 55, 0.1); }
+        #compass-container:hover { border-color: rgba(212, 175, 55, 0.9); box-shadow: 0 0 50px rgba(212, 175, 55, 0.3); }
+        #calendar-text { font-size: 2.5em; color: #d4af37; font-weight: bold; text-shadow: 0 0 10px #d4af37; }
+
+        /* 躲避按钮容器 */
+        #interactive-box { width: 100vw; height: 50vh; position: relative; display: flex; justify-content: center; align-items: center; }
+        #dodge-btn { position: absolute; padding: 12px 30px; background: #d4af37; border: none; font-size: 1.2em; color: #000; font-weight: bold; cursor: pointer; border-radius: 5px; box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); transition: 0.1s; }
+
+        /* 最终贺卡 UI (金光渐变反光) */
+        .gold-gradient-text { font-size: 4.5em; font-weight: bold; background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s infinite linear; margin-bottom: 10px; }
+        @keyframes shine { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
         
-        /* 交互小游戏样式 */
-        #prank-box { padding: 40px; background: rgba(255,255,255,0.05); border-radius: 20px; }
-        #dodge-btn { position: absolute; padding: 10px 25px; background: #d4af37; border: none; cursor: pointer; border-radius: 5px; }
+        .fade-in-text { opacity: 0; animation: fadeIn 2s ease forwards; }
+        .delay-1 { animation-delay: 1s; }
+        .delay-2 { animation-delay: 2.5s; }
+        .delay-3 { animation-delay: 4s; }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
+    <!-- 动态星空背景 -->
     <canvas id="starfield"></canvas>
 
     <div id="ui-layer">
+        
+        <!-- 幕布一：完全伪装的电影选择 -->
         <div id="screen1" class="screen active">
-            <h1>光影岁月</h1>
-            <button class="btn" onclick="switchScreen('screen1','screen2')">进入展览</button>
+            <h1>端午·光影展映馆</h1>
+            <p>请选择您要观赏的经典影像纪录：</p>
+            <button class="btn" onclick="selectMovie('《屈原》', '长太息以掩涕兮，哀民生之多艰。')">影片 1: 《屈原》</button>
+            <button class="btn" onclick="selectMovie('《典籍里的中国》', '惟殷先人，有册有典，寻源华夏文脉。')">影片 2: 《典籍里的中国》</button>
+            <button class="btn" onclick="selectMovie('《相遇中国》', '跨越山海，和而不同，见证文化交融。')">影片 3: 《相遇中国》</button>
         </div>
 
+        <!-- 幕布二：伪装载入与过渡 -->
         <div id="screen2" class="screen">
+            <h2 id="movie-title"></h2>
+            <p id="movie-quote" style="color: #d4af37; font-style: italic;"></p>
+            <p>正在从时空档案馆检索该影像资料...</p>
+            <button class="btn" onclick="switchScreen('screen2', 'screen3')">确认放映</button>
+        </div>
+
+        <!-- 幕布三：罗盘异动（画风突变） -->
+        <div id="screen3" class="screen">
+            <h2 style="font-size: 1.5em; color: #ff4d4d; margin-bottom: 40px;">⚠️ 影像载入轨线偏移... 触发时空罗盘</h2>
             <div id="compass-container" onclick="spinCompass()">
                 <div id="calendar-text">甲子</div>
             </div>
-            <p>点击罗盘，开启时空之旅</p>
+            <p id="compass-hint" style="animation: fadeIn 1.5s infinite alternate;">请点击罗盘，重新定位历史坐标</p>
         </div>
 
-        <div id="screen3" class="screen">
-            <div id="prank-box">
-                <h2 id="prank-title">准备好接收你的生日感悟了吗？</h2>
-                <button id="dodge-btn">点击领取</button>
+        <!-- 幕布四：互动关卡 -->
+        <div id="screen4" class="screen">
+            <h2>坐标已锁定：丙戌年</h2>
+            <p>在开启最终档案前，需验证心性与缘分。</p>
+            <div id="interactive-box">
+                <button id="dodge-btn">点击开启档案</button>
             </div>
         </div>
 
-        <div id="screen4" class="screen">
-            <div class="gold-gradient-text">天降俊哲</div>
-            <div style="font-size: 1.5em; color: #d4af37; margin: 20px 0;">包氏云旭，年十九满腹经纶</div>
-            <p style="max-width: 500px; line-height: 1.8;">
-                “The unexamined life is not worth living.” —— Socrates<br>
-                （未经审视的生活是不值得过的。愿你在新的一岁，保持内心的纯粹，在探索中丰盈灵魂。）
+        <!-- 幕布五：最终揭秘与寄语 -->
+        <div id="screen5" class="screen">
+            <div class="gold-gradient-text fade-in-text" style="transform: translateY(20px);">天降俊哲</div>
+            <div class="fade-in-text delay-1" style="font-size: 1.8em; color: #d4af37; margin: 10px 0 30px 0; letter-spacing: 3px; transform: translateY(20px);">包氏云旭，年十九满腹经纶</div>
+            
+            <div class="fade-in-text delay-2" style="max-width: 650px; line-height: 2; font-size: 1.2em; text-align: left; background: rgba(0,0,0,0.5); padding: 30px; border-left: 4px solid #d4af37; border-radius: 0 10px 10px 0; transform: translateY(20px);">
+                <p>“The unexamined life is not worth living.” —— Socrates<br>
+                <span style="font-size: 0.9em; color: #aaa;">（未经审视的生活是不值得过的。）</span></p>
+                <p>“深情的生命，是光影的诗。” —— 木心</p>
+            </div>
+            
+            <p class="fade-in-text delay-3" style="font-size: 1.3em; margin-top: 40px; color: #fff; transform: translateY(20px);">
+                愿你以书卷为舟，阅遍山河；在探索中保持纯粹，在岁月沉淀中愈发通透。<br>
+                生日快乐，愿你万事皆胜意。
             </p>
         </div>
+
     </div>
 
+    <!-- 背景音乐 -->
     <audio id="bgm" src="b.mp3" preload="auto"></audio>
 
     <script>
-        // 星空与切换逻辑
+        // --- 星空背景逻辑 (增加深邃感) ---
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
-        let warpSpeed = 1; stars = [];
-        
+        let width, height, stars = [], warpSpeed = 0.5; 
+
         function initStars() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            for (let i = 0; i < 600; i++) stars.push({x: Math.random()*innerWidth-innerWidth/2, y: Math.random()*innerHeight-innerHeight/2, z: Math.random()*innerWidth});
-        }
-        function drawStars() {
-            ctx.fillStyle = '#050505'; ctx.fillRect(0,0,innerWidth,innerHeight);
-            ctx.translate(innerWidth/2, innerHeight/2);
-            for(let s of stars) {
-                s.z -= warpSpeed; if(s.z <= 0) s.z = innerWidth;
-                let sx = s.x / (s.z/innerWidth), sy = s.y / (s.z/innerWidth);
-                ctx.fillStyle = '#fff'; ctx.fillRect(sx, sy, 2, 2);
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            stars = [];
+            for (let i = 0; i < 800; i++) {
+                stars.push({ x: Math.random() * width - width / 2, y: Math.random() * height - height / 2, z: Math.random() * width });
             }
-            ctx.translate(-innerWidth/2, -innerHeight/2);
+        }
+
+        function drawStars() {
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.4)'; 
+            ctx.fillRect(0, 0, width, height);
+            ctx.translate(width / 2, height / 2);
+
+            for (let star of stars) {
+                star.z -= warpSpeed;
+                if (star.z <= 0) { star.x = Math.random() * width - width / 2; star.y = Math.random() * height - height / 2; star.z = width; }
+                let sx = star.x / (star.z / width), sy = star.y / (star.z / width);
+                let radius = (1 - star.z / width) * 2.5;
+                ctx.beginPath(); ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${1 - star.z/width})`; ctx.fill();
+            }
+            ctx.translate(-width / 2, -height / 2);
             requestAnimationFrame(drawStars);
         }
-        initStars(); drawStars();
+        window.addEventListener('resize', initStars); initStars(); drawStars();
 
-        function switchScreen(hide, show) {
-            document.getElementById(hide).classList.remove('active');
-            setTimeout(() => document.getElementById(show).classList.add('active'), 500);
+        // --- 幕布切换逻辑 ---
+        function switchScreen(hideId, showId) {
+            document.getElementById(hideId).classList.remove('active');
+            setTimeout(() => { document.getElementById(showId).classList.add('active'); }, 800); 
         }
 
-        // 罗盘逻辑
+        // --- 第一幕到第二幕：记录电影选择 ---
+        function selectMovie(title, quote) {
+            document.getElementById('movie-title').innerText = "即将放映：" + title;
+            document.getElementById('movie-quote').innerText = quote;
+            // 悄悄尝试解锁音频播放权限
+            document.getElementById('bgm').load();
+            switchScreen('screen1', 'screen2');
+        }
+
+        // --- 第三幕：罗盘运转逻辑 ---
+        let isSpinning = false;
         function spinCompass() {
+            if (isSpinning) return;
+            isSpinning = true;
+            
             const compass = document.getElementById('compass-container');
-            compass.style.transform = "rotate(1440deg)";
-            setTimeout(() => switchScreen('screen2', 'screen3'), 4000);
+            const textEl = document.getElementById('calendar-text');
+            document.getElementById('compass-hint').innerText = "星象流转，时空穿梭中...";
+            
+            compass.style.transform = "rotate(2160deg) scale(1.1)"; // 旋转6圈
+            warpSpeed = 10; // 星空加速
+            
+            const stemsAndBranches = ["甲子", "乙丑", "丙寅", "丁卯", "戊辰", "己巳", "庚午", "辛未", "壬申", "癸酉", "甲戌", "乙亥"];
+            let counter = 0;
+            
+            let interval = setInterval(() => {
+                textEl.innerText = stemsAndBranches[counter % stemsAndBranches.length];
+                counter++;
+            }, 80);
+
+            // 5秒后停止
+            setTimeout(() => {
+                clearInterval(interval);
+                textEl.innerText = "丙戌年";
+                textEl.style.fontSize = "3em";
+                warpSpeed = 0.5; // 星空减速
+                setTimeout(() => { switchScreen('screen3', 'screen4'); }, 1500);
+            }, 5000);
         }
 
-        // 互动逻辑
-        const btn = document.getElementById('dodge-btn');
-        let count = 0;
-        btn.addEventListener('mouseover', () => {
-            if(count < 5) {
-                btn.style.left = Math.random() * 80 + 'vw';
-                btn.style.top = Math.random() * 80 + 'vh';
-                count++;
-            } else {
-                btn.innerText = "领取心意";
+        // --- 第四幕：躲避按钮逻辑 ---
+        const dodgeBtn = document.getElementById('dodge-btn');
+        const box = document.getElementById('interactive-box');
+        let dodgeCount = 0;
+        const maxDodges = 4; // 躲避4次
+
+        dodgeBtn.addEventListener('mouseover', function() {
+            if (dodgeCount < maxDodges) {
+                const boxRect = box.getBoundingClientRect();
+                const btnRect = dodgeBtn.getBoundingClientRect();
+                
+                // 在容器范围内随机移动
+                const maxX = boxRect.width - btnRect.width;
+                const maxY = boxRect.height - btnRect.height;
+                
+                const randomX = Math.max(0, Math.floor(Math.random() * maxX));
+                const randomY = Math.max(0, Math.floor(Math.random() * maxY));
+
+                dodgeBtn.style.left = randomX + 'px';
+                dodgeBtn.style.top = randomY + 'px';
+                dodgeCount++;
+                
+                if (dodgeCount === 2) dodgeBtn.innerText = "心不定，则影不现";
+                if (dodgeCount === 4) dodgeBtn.innerText = "缘分已到，点击查收";
             }
         });
-        btn.onclick = () => {
-            document.getElementById('bgm').play();
-            switchScreen('screen3', 'screen4');
-        };
+
+        // 手机端触摸支持
+        dodgeBtn.addEventListener('touchstart', function(e) {
+            if (dodgeCount < maxDodges) {
+                e.preventDefault(); 
+                dodgeBtn.dispatchEvent(new Event('mouseover'));
+            }
+        });
+
+        dodgeBtn.addEventListener('click', function() {
+            if (dodgeCount >= maxDodges || dodgeCount === 0) { // 允许直接点(如果手速极快)或点够次数
+                document.getElementById('bgm').play(); // 播放音乐
+                switchScreen('screen4', 'screen5');
+            }
+        });
     </script>
 </body>
 </html>
